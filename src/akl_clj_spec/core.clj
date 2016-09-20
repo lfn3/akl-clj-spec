@@ -2,7 +2,9 @@
   (:require [clojure.test :refer [deftest is]]
             [clojure.spec :as s]
             [clojure.spec.test :as st]
-            [clojure.string :as str])
+            [clojure.string :as str]
+            [clojure.core.async :as a]
+            [clojure.core.async.impl.protocols :as ap])
   (:import (clojure.lang ExceptionInfo)))
 
 ;Don't actually replace this. It's so you can find the things you do need to replace.
@@ -79,7 +81,19 @@
   (is (not (s/valid? ::person {}))))
 
 ;; =====
-;; 7
+;; 8
+;; =====
+
+(s/def ::dog-breed-ratings (s/map-of ::dog-breed !!!replace-me!!!))
+
+(deftest dog-rating-test
+  (is (s/valid? ::dog-breed-ratings {:german-shepard 10
+                                     :corgi 0}))
+  (is (not (s/valid? ::dog-breed-ratings {:tabby "0"
+                                          :tortise-shell 7}))))
+
+;; =====
+;; 9
 ;; =====
 
 (defn foo [x]
@@ -95,7 +109,7 @@
   (st/unstrument ['akl-clj-spec.core/foo]))
 
 ;; =====
-;; 8
+;; 10
 ;; =====
 
 (defn bar [x]
@@ -112,7 +126,7 @@
   (st/unstrument ['akl-clj-spec.core/bar]))
 
 ;; =====
-;; 9
+;; 11
 ;; =====
 
 (defn baz [x]
@@ -132,3 +146,20 @@
           :clojure.spec.test.check/ret
           :result))
   (st/unstrument ['akl-clj-spec.core/baz]))
+
+;; =====
+;; 12
+;; =====
+
+;; This one's harder, and needs a macro and knowledge of protocols.
+;; Ask for hints if you want.
+(defmacro chan-of [spec & chan-args]
+  ;TODO: alter this so it throws an exception if you don't pass a thing that conforms to `spec`
+  `(a/chan ~@chan-args))
+
+(deftest chan-of-test
+  (let [ch (chan-of int?)]
+    (a/put! ch 1)
+    (is (= 1
+           (a/poll! ch)))
+    (is (thrown? Exception (a/put! ch "fez")))))
