@@ -15,11 +15,11 @@
 ;; ====
 
 (deftest pick-and-mix
-  (is (s/valid? int? 1))
-  (is (s/valid? string? "alma"))
-  (is (s/valid? keyword? :alma))
-  (is (s/valid? fn? #()))
-  (is (s/valid? seq? '(1 2 3)))
+  (is (s/valid? int? !!!replace-me!!!))
+  (is (s/valid? string? !!!replace-me!!!))
+  (is (s/valid? keyword? !!!replace-me!!!))
+  (is (s/valid? fn? nil))
+  (is (s/valid? seq? !!!replace-me!!!))
   (is (s/valid? (s/coll-of int?) !!!replace-me!!!))
   (is (s/valid? associative? !!!replace-me!!!))
   (is (s/valid? (s/nilable keyword?) !!!replace-me!!!))
